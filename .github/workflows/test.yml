@@ -50,7 +50,7 @@ jobs:
 
       -
         name: Build
-        uses: goreleaser/goreleaser-action@5a54d7e660bda43b405e8463261b3d25631ffe86
+        uses: goreleaser/goreleaser-action@ff11ca24a9b39f2d36796d1fbd7a4e39c182630a
         with:
           distribution: goreleaser
           version: v0.176.0
