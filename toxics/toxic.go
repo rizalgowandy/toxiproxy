@@ -1,9 +1,11 @@
 package toxics
 
 import (
+	"fmt"
 	"math/rand"
 	"reflect"
 	"sync"
+	"time"
 
 	"github.com/Shopify/toxiproxy/v2/stream"
 )
@@ -22,7 +24,8 @@ import (
 // for multiple connections.
 
 type Toxic interface {
-	// Defines how packets flow through a ToxicStub. Pipe() blocks until the link is closed or interrupted.
+	// Defines how packets flow through a ToxicStub.
+	// Pipe() blocks until the link is closed or interrupted.
 	Pipe(*ToxicStub)
 }
 
@@ -74,7 +77,7 @@ func NewToxicStub(input <-chan *stream.StreamChunk, output chan<- *stream.Stream
 }
 
 // Begin running a toxic on this stub, can be interrupted.
-// Runs a noop toxic randomly depending on toxicity
+// Runs a noop toxic randomly depending on toxicity.
 func (s *ToxicStub) Run(toxic *ToxicWrapper) {
 	s.running = make(chan struct{})
 	defer close(s.running)
@@ -83,6 +86,22 @@ func (s *ToxicStub) Run(toxic *ToxicWrapper) {
 		toxic.Pipe(s)
 	} else {
 		new(NoopToxic).Pipe(s)
+	}
+}
+
+// WriteOutput allows to write to Output with timeout to avoid deadlocks.
+// If duration is 0, then wait until other goroutines finish reading from Output.
+func (s *ToxicStub) WriteOutput(p *stream.StreamChunk, d time.Duration) error {
+	if d == 0 {
+		s.Output <- p
+		return nil
+	}
+
+	select {
+	case s.Output <- p:
+		return nil
+	case <-time.After(d):
+		return fmt.Errorf("timeout: could not write to output in %d seconds", int(d.Seconds()))
 	}
 }
 

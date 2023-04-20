@@ -1,4 +1,5 @@
 # Toxiproxy
+
 [![GitHub release](https://img.shields.io/github/release/Shopify/toxiproxy.svg)](https://github.com/Shopify/toxiproxy/releases/latest)
 ![Build Status](https://github.com/Shopify/toxiproxy/actions/workflows/test.yml/badge.svg)
 
@@ -41,29 +42,36 @@ stopping you from creating a client in any other language (see
 
 ## Table of Contents
 
-1. [Why yet another chaotic TCP proxy?](#why-yet-another-chaotic-tcp-proxy)
-2. [Clients](#clients)
-3. [Example](#example)
-4. [Usage](#usage)
-   1. [Installing](#1-installing-toxiproxy)
-      1. [Upgrading from 1.x](#upgrading-from-toxiproxy-1x)
-   2. [Populating](#2-populating-toxiproxy)
-   3. [Using](#3-using-toxiproxy)
-5. [Toxics](#toxics)
-   1. [Latency](#latency)
-   2. [Down](#down)
-   3. [Bandwidth](#bandwidth)
-   4. [Slow close](#slow_close)
-   5. [Timeout](#timeout)
-   6. [Slicer](#slicer)
-6. [HTTP API](#http-api)
-   1. [Proxy fields](#proxy-fields)
-   2. [Toxic fields](#toxic-fields)
-   3. [Endpoints](#endpoints)
-   4. [Populating Proxies](#populating-proxies)
-7. [CLI example](#cli-example)
-8. [FAQ](#frequently-asked-questions)
-9. [Development](#development)
+- [Toxiproxy](#toxiproxy)
+  - [Table of Contents](#table-of-contents)
+  - [Why yet another chaotic TCP proxy?](#why-yet-another-chaotic-tcp-proxy)
+  - [Clients](#clients)
+  - [Example](#example)
+  - [Usage](#usage)
+    - [1. Installing Toxiproxy](#1-installing-toxiproxy)
+      - [Upgrading from Toxiproxy 1.x](#upgrading-from-toxiproxy-1x)
+    - [2. Populating Toxiproxy](#2-populating-toxiproxy)
+    - [3. Using Toxiproxy](#3-using-toxiproxy)
+    - [4. Logging](#4-logging)
+    - [Toxics](#toxics)
+      - [latency](#latency)
+      - [down](#down)
+      - [bandwidth](#bandwidth)
+      - [slow_close](#slow_close)
+      - [timeout](#timeout)
+      - [reset_peer](#reset_peer)
+      - [slicer](#slicer)
+      - [limit_data](#limit_data)
+    - [HTTP API](#http-api)
+      - [Proxy fields:](#proxy-fields)
+      - [Toxic fields:](#toxic-fields)
+      - [Endpoints](#endpoints)
+      - [Populating Proxies](#populating-proxies)
+    - [CLI Example](#cli-example)
+    - [Metrics](#metrics)
+    - [Frequently Asked Questions](#frequently-asked-questions)
+    - [Development](#development)
+    - [Release](#release)
 
 ## Why yet another chaotic TCP proxy?
 
@@ -74,16 +82,16 @@ development and CI environments.
 
 ## Clients
 
-* [toxiproxy-ruby](https://github.com/Shopify/toxiproxy-ruby)
-* [toxiproxy-go](https://github.com/Shopify/toxiproxy/tree/master/client)
-* [toxiproxy-python](https://github.com/douglas/toxiproxy-python)
-* [toxiproxy.net](https://github.com/mdevilliers/Toxiproxy.Net)
-* [toxiproxy-php-client](https://github.com/ihsw/toxiproxy-php-client)
-* [toxiproxy-node-client](https://github.com/ihsw/toxiproxy-node-client)
-* [toxiproxy-java](https://github.com/trekawek/toxiproxy-java)
-* [toxiproxy-haskell](https://github.com/jpittis/toxiproxy-haskell)
-* [toxiproxy-rust](https://github.com/itarato/toxiproxy_rust)
-* [toxiproxy-elixir](https://github.com/Jcambass/toxiproxy_ex)
+- [toxiproxy-ruby](https://github.com/Shopify/toxiproxy-ruby)
+- [toxiproxy-go](https://github.com/Shopify/toxiproxy/tree/master/client)
+- [toxiproxy-python](https://github.com/douglas/toxiproxy-python)
+- [toxiproxy.net](https://github.com/mdevilliers/Toxiproxy.Net)
+- [toxiproxy-php-client](https://github.com/ihsw/toxiproxy-php-client)
+- [toxiproxy-node-client](https://github.com/ihsw/toxiproxy-node-client)
+- [toxiproxy-java](https://github.com/trekawek/toxiproxy-java)
+- [toxiproxy-haskell](https://github.com/jpittis/toxiproxy-haskell)
+- [toxiproxy-rust](https://github.com/itarato/toxiproxy_rust)
+- [toxiproxy-elixir](https://github.com/Jcambass/toxiproxy_ex)
 
 ## Example
 
@@ -201,9 +209,9 @@ binaries and system packages for your architecture.
 **Ubuntu**
 
 ```bash
-$ wget -O toxiproxy-2.1.4.deb https://github.com/Shopify/toxiproxy/releases/download/v2.1.4/toxiproxy_2.1.4_amd64.deb
-$ sudo dpkg -i toxiproxy-2.1.4.deb
-$ sudo service toxiproxy start
+wget -O toxiproxy-2.1.4.deb https://github.com/Shopify/toxiproxy/releases/download/v2.1.4/toxiproxy_2.1.4_amd64.deb
+sudo dpkg -i toxiproxy-2.1.4.deb
+sudo service toxiproxy start
 ```
 
 **OS X**
@@ -211,19 +219,19 @@ $ sudo service toxiproxy start
 With [Homebrew](https://brew.sh/):
 
 ```bash
-$ brew tap shopify/shopify
-$ brew install toxiproxy
+brew tap shopify/shopify
+brew install toxiproxy
 ```
 
 Or with [MacPorts](https://www.macports.org/):
 
 ```bash
-$ port install toxiproxy
+port install toxiproxy
 ```
 
 **Windows**
 
-Toxiproxy for Windows is available for download at https://github.com/Shopify/toxiproxy/releases/download/v2.1.4/toxiproxy-server-windows-amd64.exe
+Toxiproxy for Windows is available for download at <https://github.com/Shopify/toxiproxy/releases/download/v2.1.4/toxiproxy-server-windows-amd64.exe>
 
 **Docker**
 
@@ -231,18 +239,23 @@ Toxiproxy is available on [Github container registry](https://github.com/Shopify
 Old versions `<= 2.1.4` are available on on [Docker Hub](https://hub.docker.com/r/shopify/toxiproxy/).
 
 ```bash
-$ docker pull ghcr.io/shopify/toxiproxy
-$ docker run -it ghcr.io/shopify/toxiproxy
+docker pull ghcr.io/shopify/toxiproxy
+docker run --rm -it ghcr.io/shopify/toxiproxy
 ```
 
 If using Toxiproxy from the host rather than other containers, enable host networking with `--net=host`.
 
+```shell
+docker run --rm --entrypoint="/toxiproxy-cli" -it ghcr.io/shopify/toxiproxy list
+```
+
 **Source**
 
 If you have Go installed, you can build Toxiproxy from source using the make file:
+
 ```bash
-$ make build
-$ ./toxiproxy-server
+make build
+./toxiproxy-server
 ```
 
 #### Upgrading from Toxiproxy 1.x
@@ -253,7 +266,7 @@ library supports the same version. You can check which version of Toxiproxy you 
 looking at the `/version` endpoint.
 
 See the documentation for your client library for specific library changes. Detailed changes
-for the Toxiproxy server can been found in [CHANGELOG.md](https://github.com/Shopify/toxiproxy/blob/master/CHANGELOG.md).
+for the Toxiproxy server can been found in [CHANGELOG.md](./CHANGELOG.md).
 
 ### 2. Populating Toxiproxy
 
@@ -355,13 +368,18 @@ toxiproxy-cli toxic add -t latency -a latency=1000 shopify_test_redis_master
 
 Please consult your respective client library on usage.
 
+### 4. Logging
+
+There are the following log levels: panic, fatal, error, warn or warning, info, debug and trace.
+The level could be updated via environment variable `LOG_LEVEL`.
+
 ### Toxics
 
 Toxics manipulate the pipe between the client and upstream. They can be added
 and removed from proxies using the [HTTP api](#http-api). Each toxic has its own parameters
 to change how it affects the proxy links.
 
-For documentation on implementing custom toxics, see [CREATING_TOXICS.md](https://github.com/Shopify/toxiproxy/blob/master/CREATING_TOXICS.md)
+For documentation on implementing custom toxics, see [CREATING_TOXICS.md](./CREATING_TOXICS.md)
 
 #### latency
 
@@ -369,8 +387,8 @@ Add a delay to all data going through the proxy. The delay is equal to `latency`
 
 Attributes:
 
- - `latency`: time in milliseconds
- - `jitter`: time in milliseconds
+- `latency`: time in milliseconds
+- `jitter`: time in milliseconds
 
 #### down
 
@@ -384,7 +402,7 @@ Limit a connection to a maximum number of kilobytes per second.
 
 Attributes:
 
- - `rate`: rate in KB/s
+- `rate`: rate in KB/s
 
 #### slow_close
 
@@ -392,7 +410,7 @@ Delay the TCP socket from closing until `delay` has elapsed.
 
 Attributes:
 
- - `delay`: time in milliseconds
+- `delay`: time in milliseconds
 
 #### timeout
 
@@ -402,7 +420,16 @@ toxic is removed.
 
 Attributes:
 
- - `timeout`: time in milliseconds
+- `timeout`: time in milliseconds
+
+#### reset_peer
+
+Simulate TCP RESET (Connection reset by peer) on the connections by closing the stub Input
+immediately or after a `timeout`.
+
+Attributes:
+
+- `timeout`: time in milliseconds
 
 #### slicer
 
@@ -411,15 +438,15 @@ sliced "packet".
 
 Attributes:
 
- - `average_size`: size in bytes of an average packet
- - `size_variation`: variation in bytes of an average packet (should be smaller than average_size)
- - `delay`: time in microseconds to delay each packet by
+- `average_size`: size in bytes of an average packet
+- `size_variation`: variation in bytes of an average packet (should be smaller than average_size)
+- `delay`: time in microseconds to delay each packet by
 
 #### limit_data
 
 Closes connection when transmitted data exceeded limit.
 
- - `bytes`: number of bytes it should transmit before connection is closed
+- `bytes`: number of bytes it should transmit before connection is closed
 
 ### HTTP API
 
@@ -428,12 +455,12 @@ HTTP interface, which is described here.
 
 Toxiproxy listens for HTTP on port **8474**.
 
-#### Proxy fields:
+#### Proxy fields
 
- - `name`: proxy name (string)
- - `listen`: listen address (string)
- - `upstream`: proxy upstream address (string)
- - `enabled`: true/false (defaults to true on creation)
+- `name`: proxy name (string)
+- `listen`: listen address (string)
+- `upstream`: proxy upstream address (string)
+- `enabled`: true/false (defaults to true on creation)
 
 To change a proxy's name, it must be deleted and recreated.
 
@@ -445,13 +472,13 @@ in the response will be updated with the actual port.
 If you change `enabled` to `false`, it will take down the proxy. You can switch it
 back to `true` to reenable it.
 
-#### Toxic fields:
+#### Toxic fields
 
- - `name`: toxic name (string, defaults to `<type>_<stream>`)
- - `type`: toxic type (string)
- - `stream`: link direction to affect (defaults to `downstream`)
- - `toxicity`: probability of the toxic being applied to a link (defaults to 1.0, 100%)
- - `attributes`: a map of toxic-specific attributes
+- `name`: toxic name (string, defaults to `<type>_<stream>`)
+- `type`: toxic type (string)
+- `stream`: link direction to affect (defaults to `downstream`)
+- `toxicity`: probability of the toxic being applied to a link (defaults to 1.0, 100%)
+- `attributes`: a map of toxic-specific attributes
 
 See [Toxics](#toxics) for toxic-specific attributes.
 
@@ -464,19 +491,20 @@ separately.
 
 All endpoints are JSON.
 
- - **GET /proxies** - List existing proxies and their toxics
- - **POST /proxies** - Create a new proxy
- - **POST /populate** - Create or replace a list of proxies
- - **GET /proxies/{proxy}** - Show the proxy with all its active toxics
- - **POST /proxies/{proxy}** - Update a proxy's fields
- - **DELETE /proxies/{proxy}** - Delete an existing proxy
- - **GET /proxies/{proxy}/toxics** - List active toxics
- - **POST /proxies/{proxy}/toxics** - Create a new toxic
- - **GET /proxies/{proxy}/toxics/{toxic}** - Get an active toxic's fields
- - **POST /proxies/{proxy}/toxics/{toxic}** - Update an active toxic
- - **DELETE /proxies/{proxy}/toxics/{toxic}** - Remove an active toxic
- - **POST /reset** - Enable all proxies and remove all active toxics
- - **GET /version** - Returns the server version number
+- **GET /proxies** - List existing proxies and their toxics
+- **POST /proxies** - Create a new proxy
+- **POST /populate** - Create or replace a list of proxies
+- **GET /proxies/{proxy}** - Show the proxy with all its active toxics
+- **POST /proxies/{proxy}** - Update a proxy's fields
+- **DELETE /proxies/{proxy}** - Delete an existing proxy
+- **GET /proxies/{proxy}/toxics** - List active toxics
+- **POST /proxies/{proxy}/toxics** - Create a new toxic
+- **GET /proxies/{proxy}/toxics/{toxic}** - Get an active toxic's fields
+- **POST /proxies/{proxy}/toxics/{toxic}** - Update an active toxic
+- **DELETE /proxies/{proxy}/toxics/{toxic}** - Remove an active toxic
+- **POST /reset** - Enable all proxies and remove all active toxics
+- **GET /version** - Returns the server version number
+- **GET /metrics** - Returns Prometheus-compatible metrics
 
 #### Populating Proxies
 
@@ -545,6 +573,11 @@ $ redis-cli -p 26379
 Could not connect to Redis at 127.0.0.1:26379: Connection refused
 ```
 
+### Metrics
+
+Toxiproxy exposes Prometheus-compatible metrics via its HTTP API at /metrics.
+See [METRICS.md](./METRICS.md) for full descriptions
+
 ### Frequently Asked Questions
 
 **How fast is Toxiproxy?** The speed of Toxiproxy depends largely on your hardware,
@@ -576,20 +609,15 @@ For example, `shopify_test_redis_master` or `shopify_development_mysql_1`.
 
 ### Development
 
-* `make`. Build a toxiproxy development binary for the current platform.
-* `make all`. Build Toxiproxy binaries and packages for all platforms. Requires
+- `make`. Build a toxiproxy development binary for the current platform.
+- `make all`. Build Toxiproxy binaries and packages for all platforms. Requires
   to have Go compiled with cross compilation enabled on Linux and Darwin (amd64)
   as well as [`goreleaser`](https://goreleaser.com/) in your `$PATH` to
   build binaries the Linux package.
-* `make test`. Run the Toxiproxy tests.
+- `make test`. Run the Toxiproxy tests.
 
 ### Release
 
-1. Ensure this release has run internally for `Shopify/shopify` for at least a
-   day which is the best fuzzy test for robustness we have.
-1. Update `CHANGELOG.md`
-1. Change versions in `README.md`
-1. Commit, Tag, and Push
-1. [Bump version for Homebrew](https://github.com/Shopify/homebrew-shopify/blob/master/toxiproxy.rb#L9)
+See [RELEASE.md](./RELEASE.md)
 
-[blog]: https://shopifyengineering.myshopify.com/blogs/engineering/building-and-testing-resilient-ruby-on-rails-applications
+[blog]: https://shopify.engineering/building-and-testing-resilient-ruby-on-rails-applications

@@ -1,10 +1,11 @@
+---
 name: Test
 
 on:
   push:
-    branches: [ master ]
+    branches: [main]
   pull_request:
-    branches: [ master ]
+    branches: [main]
 
 jobs:
   test:
@@ -12,46 +13,50 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        go: [ '1.17', '1.16', '1.15', '1.14' ]
-    name: Go ${{ matrix.go }}
+        go: ["1.19", "1.18", "1.17"]
+    name: go ${{ matrix.go }}
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      -
-        name: Setup go
-        uses: actions/setup-go@v2
+
+      - name: Setup go
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
-      -
-        name: Tests
+          check-latest: true
+          cache: true
+
+      - name: Tests
         run: make test
+
+      - name: benchmarks
+        run: make bench
 
   build:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      -
-        name: Setup go
-        uses: actions/setup-go@v2
+      - name: Setup go
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.17
+          go-version: 1.19
+          check-latest: true
+          cache: true
 
-      -
-        name: E2E tests
-        run: make e2e
+      - name: E2E tests
+        run: make test-e2e
 
-      -
-        name: Build
-        uses: goreleaser/goreleaser-action@5a54d7e660bda43b405e8463261b3d25631ffe86
+      - name: Build
+        uses: goreleaser/goreleaser-action@f82d6c1c344bcacabba2c841718984797f664a6b
         with:
           distribution: goreleaser
-          version: v0.176.0
-          args: build --snapshot --rm-dist --skip-post-hooks --skip-validate
+          version: v1.10.3
+          args: build --snapshot --rm-dist --skip-post-hooks --skip-validate --single-target
+        env:
+          GOOS: linux

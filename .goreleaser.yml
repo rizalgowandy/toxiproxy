@@ -1,3 +1,5 @@
+---
+
 project_name: toxiproxy
 
 env:
@@ -11,7 +13,7 @@ before:
 builds:
   - &build_default
     id: server
-    main: ./cmd
+    main: ./cmd/server
     binary: toxiproxy-server-{{.Os}}-{{.Arch}}
     no_unique_dist_dir: true
     env:
@@ -34,13 +36,51 @@ builds:
       - goos: windows
         goarch: arm64
 
+      - goarch: arm
+
     ldflags:
-      - -s -w -X github.com/Shopify/toxiproxy.Version={{.Version}}
+      - -s -w -X github.com/Shopify/toxiproxy/v2.Version={{.Version}}
 
   - <<: *build_default
+    id: server-arm
+    goarch:
+      - arm
+    goarm:
+      - "6"
+      - "7"
+    ignore:
+      - goos: windows
+        goarch: arm
+    binary: toxiproxy-server-{{.Os}}-{{.Arch}}v{{.Arm}}
+
+  - &build_client
+    <<: *build_default
     id: client
-    main: ./cli
+    main: ./cmd/cli
     binary: toxiproxy-cli-{{.Os}}-{{.Arch}}
+
+  - <<: *build_client
+    id: client-arm
+    goarch:
+      - arm
+    goarm:
+      - "6"
+      - "7"
+    ignore:
+      - goos: windows
+        goarch: arm
+    binary: toxiproxy-cli-{{.Os}}-{{.Arch}}v{{.Arm}}
+
+  - <<: *build_default
+    id: pkg-server
+    no_unique_dist_dir: false
+    binary: toxiproxy-server
+
+  - <<: *build_default
+    id: pkg-client
+    no_unique_dist_dir: false
+    main: ./cmd/cli
+    binary: toxiproxy-cli
 
 checksum:
   name_template: checksums.txt
@@ -49,21 +89,24 @@ snapshot:
   name_template: "{{ incpatch .Version }}-next"
 
 nfpms:
-  -
-    id: packages
+  - id: packages
     package_name: toxiproxy
     homepage: https://github.com/Shopify/toxiproxy
     maintainer: Shopify Opensource <opensource@shopify.com>
     description: TCP proxy to simulate network and system conditions.
     license: MIT
+    bindir: /usr/bin
+    builds:
+      - pkg-server
+      - pkg-client
     formats:
       - apk
       - deb
       - rpm
-    # NOTE: Starting with Ubuntu 15.04, Upstart will be deprecated in favor of Systemd.
-    # contents:
-    #   - src: share/toxiproxy.conf
-    #     dst: /etc/init/toxiproxy.conf
+      # NOTE: Starting with Ubuntu 15.04, Upstart will be deprecated in favor of Systemd.
+      # contents:
+      #   - src: share/toxiproxy.conf
+      #     dst: /etc/init/toxiproxy.conf
 
 dockers:
   - &docker
@@ -106,32 +149,75 @@ dockers:
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=MIT
+  - <<: *docker
+    goarch: arm
+    goarm: "7"
+    image_templates:
+      - ghcr.io/shopify/toxiproxy:{{ .Version }}-armv7
+      - ghcr.io/shopify/toxiproxy:v{{ .Major }}-armv7
+      - ghcr.io/shopify/toxiproxy:v{{ .Major }}.{{ .Minor }}-armv7
+    build_flag_templates:
+      - --platform=linux/arm/v6
+      - --no-cache
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/Shopify/{{ .ProjectName }}
+      - --label=org.opencontainers.image.source=https://github.com/Shopify/{{ .ProjectName }}
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+  - <<: *docker
+    goarch: arm
+    goarm: "6"
+    image_templates:
+      - ghcr.io/shopify/toxiproxy:{{ .Version }}-armv6
+      - ghcr.io/shopify/toxiproxy:v{{ .Major }}-armv6
+      - ghcr.io/shopify/toxiproxy:v{{ .Major }}.{{ .Minor }}-armv6
+    build_flag_templates:
+      - --platform=linux/arm/v6
+      - --no-cache
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/Shopify/{{ .ProjectName }}
+      - --label=org.opencontainers.image.source=https://github.com/Shopify/{{ .ProjectName }}
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
 
 docker_manifests:
-  -
-    name_template: ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}
+  - name_template: ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}
     image_templates:
       - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-amd64
       - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-arm64
-  -
-    name_template: ghcr.io/shopify/{{ .ProjectName }}:latest
+      - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-armv6
+      - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-armv7
+  - name_template: ghcr.io/shopify/{{ .ProjectName }}:latest
     image_templates:
       - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-amd64
       - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-arm64
+      - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-armv6
+      - ghcr.io/shopify/{{ .ProjectName }}:{{ .Version }}-armv7
 
 changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
-      - '^Merge'
+      - "^docs:"
+      - "^test:"
+      - ^Merge
 
 archives:
-  -
-    id: archive_binaries
+  - id: archive_binaries
     format: binary
     name_template: "{{ .Binary }}"
-  -
-    id: archive_default
+    builds:
+      - server
+      - client
+
+  - id: archive_default
     format: tar.gz
+    builds:
+      - pkg-server
+      - pkg-client

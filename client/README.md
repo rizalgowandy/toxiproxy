@@ -32,7 +32,7 @@ documentation](http://godoc.org/github.com/Shopify/toxiproxy/client).
 
 First import toxiproxy and create a new client:
 ```go
-import "github.com/Shopify/toxiproxy/client"
+import toxiproxy "github.com/Shopify/toxiproxy/v2/client"
 
 client := toxiproxy.NewClient("localhost:8474")
 ```
@@ -95,7 +95,7 @@ import (
     "testing"
     "time"
 
-    "github.com/Shopify/toxiproxy/client"
+    toxiproxy "github.com/Shopify/toxiproxy/v2/client"
     "github.com/garyburd/redigo/redis"
 )
 
@@ -109,6 +109,7 @@ func init() {
         Name:     "redis",
         Listen:   "localhost:26379",
         Upstream: "localhost:6379",
+        // note: you cannot set toxics here via ActiveToxics
     }})
     if err != nil {
         panic(err)
